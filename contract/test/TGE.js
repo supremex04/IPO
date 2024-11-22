@@ -54,19 +54,24 @@ describe("TGE Contract", function () {
     });
 
     it("Should update balances after transfers", async function () {
-      const initialOwnerBalance = await tge.balanceOf(owner.address);
-
-      await tge.transfer(addr1.address, ethers.utils.parseUnits("200", 18));
-      await tge.transfer(addr2.address, ethers.utils.parseUnits("100", 18));
-
-      const finalOwnerBalance = await tge.balanceOf(owner.address);
-      expect(finalOwnerBalance).to.equal(initialOwnerBalance.sub(ethers.utils.parseUnits("300", 18)));
-
-      const addr1Balance = await tge.balanceOf(addr1.address);
-      expect(addr1Balance).to.equal(ethers.utils.parseUnits("200", 18));
-
-      const addr2Balance = await tge.balanceOf(addr2.address);
-      expect(addr2Balance).to.equal(ethers.utils.parseUnits("100", 18));
-    });
+        const initialOwnerBalance = await tge.balanceOf(owner.address);
+      
+        // Transfer amounts using raw integers (BigInt)
+        await tge.transfer(addr1.address, 100);  // Transfer 100 tokens
+        await tge.transfer(addr2.address, 50);   // Transfer 50 tokens
+      
+        const finalOwnerBalance = await tge.balanceOf(owner.address);
+      
+        // Calculate expected balance using BigInt
+        const expectedOwnerBalance = initialOwnerBalance - BigInt(100 + 50);  // 150 tokens transferred out
+      
+        expect(finalOwnerBalance).to.equal(expectedOwnerBalance);
+      
+        const addr1Balance = await tge.balanceOf(addr1.address);
+        expect(addr1Balance).to.equal(100);
+      
+        const addr2Balance = await tge.balanceOf(addr2.address);
+        expect(addr2Balance).to.equal(50);
+      });
   });
 });
