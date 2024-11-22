@@ -6,8 +6,11 @@ module.exports = buildModule("TGEContractModule", (m) => {
   const tokenSymbol = m.getParameter("tokenSymbol", "NEP");
   const initialSupply = m.getParameter("initialSupply", 1000); // in raw units, i.e., without decimals
 
-  // Deploy the contract
-  const tgeContract = m.contract("TGE", [tokenName, tokenSymbol, initialSupply]);
+  // Deploy the TokenFactory contract first
+  const tokenFactory = m.contract("TokenFactory", []);
 
-  return { tgeContract };
+  // Create a new token using the factory
+  const tgeTokenAddress = m.call(tokenFactory, "createToken", [tokenName,tokenSymbol,initialSupply])
+
+  return { tgeTokenAddress, tokenFactory };
 });
