@@ -1,4 +1,3 @@
-// contracts/GLDToken.sol
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -9,6 +8,6 @@ contract TGE is ERC20 {
 
     constructor(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
         owner = payable(msg.sender);
-        _mint(owner, initialSupply * (10**decimals())); // Mint initial tokens
+        _mint(owner, initialSupply * (10**decimals())); 
     }
 }
