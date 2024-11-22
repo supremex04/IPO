@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat"); // Import ethers properly
+const { ethers } = require("hardhat"); 
 
 describe("TGE Contract", function () {
   // global vars
@@ -37,6 +37,7 @@ describe("TGE Contract", function () {
   });
 
   describe("Transactions", function () {
+    
     it("Should transfer tokens between accounts", async function () {
       await tge.transfer(addr1.address, 100);
       const addr1Balance = await tge.balanceOf(addr1.address);
