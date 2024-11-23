@@ -19,8 +19,8 @@ describe("TokenFactory and TGE Contracts", function () {
 
   describe("Deployment", function () {
     it("Should deploy the TokenFactory contract", async function () {
-      const factoryAddress = tokenFactory.target;
-      expect(factoryAddress).to.properAddress;
+      const factoryAddress = await tokenFactory.getAddress();
+      expect(factoryAddress).to.be.properAddress;
     });
 
     it("Should initialize with no created tokens", async function () {
@@ -36,34 +36,23 @@ describe("TokenFactory and TGE Contracts", function () {
 
       const tokens = await tokenFactory.getCreatedTokens();
       expect(tokens.length).to.equal(1);
-      expect(tokens[0]).to.properAddress;
+      expect(tokens[0]).to.be.properAddress;
     });
 
     it("Should emit TokenCreated event on token creation", async function () {
       const tx = await tokenFactory.createToken(tokenName, tokenSymbol, initialSupply);
       const receipt = await tx.wait();
-    
-      // Check if events exist in the receipt
-      if (!receipt.events || receipt.events.length === 0) {
-        throw new Error("No events emitted");
-      }
-    
-      // Locate the "TokenCreated" event
-      const event = receipt.events.find((e) => e.event === "TokenCreated");
-      if (!event) {
-        throw new Error('TokenCreated event not found in receipt');
-      }
-    
-      const { creator, tokenAddress, name, symbol } = event.args;
-    
-      // Assert the event arguments
-      expect(creator).to.equal(owner.address);
-      expect(tokenAddress).to.properAddress;
-      expect(name).to.equal(tokenName);
-      expect(symbol).to.equal(tokenSymbol);
+      
+      const event = receipt.logs.find(
+        (log) => log.fragment && log.fragment.name === "TokenCreated"
+      );
+      
+      expect(event).to.not.be.undefined;
+      expect(event.args[0]).to.equal(owner.address);
+      expect(event.args[1]).to.be.properAddress;
+      expect(event.args[2]).to.equal(tokenName);
+      expect(event.args[3]).to.equal(tokenSymbol);
     });
-    
-    
   });
 
   describe("Transactions with created tokens", function () {
@@ -72,24 +61,28 @@ describe("TokenFactory and TGE Contracts", function () {
     beforeEach(async function () {
       const tx = await tokenFactory.createToken(tokenName, tokenSymbol, initialSupply);
       const receipt = await tx.wait();
-      const tokenAddress = receipt.events.find((e) => e.event === "TokenCreated").args.tokenAddress;
-
-      tokenContract = await ethers.getContractAt("TGE", tokenAddress);
+      
+      const event = receipt.logs.find(
+        (log) => log.fragment && log.fragment.name === "TokenCreated"
+      );
+      
+      tokenContract = await ethers.getContractAt("TGE", event.args[1]);
     });
 
     it("Should allow transfers between accounts", async function () {
-      await tokenContract.transfer(addr1.address, ethers.parseUnits("100", 18));
+      await tokenContract.transfer(addr1.address, 100);
       const addr1Balance = await tokenContract.balanceOf(addr1.address);
-      expect(addr1Balance).to.equal(ethers.parseUnits("100", 18));
+      expect(addr1Balance).to.equal(100);
 
-      await tokenContract.connect(addr1).transfer(addr2.address, ethers.parseUnits("50", 18));
+      await tokenContract.connect(addr1).transfer(addr2.address, 50);
       const addr2Balance = await tokenContract.balanceOf(addr2.address);
-      expect(addr2Balance).to.equal(ethers.parseUnits("50", 18));
+      expect(addr2Balance).to.equal(50);
     });
 
     it("Should fail if sender doesn't have enough tokens", async function () {
+      const transferAmount = ethers.parseUnits("1", 18);
       await expect(
-        tokenContract.connect(addr1).transfer(addr2.address, ethers.parseUnits("1", 18))
+        tokenContract.connect(addr1).transfer(addr2.address, transferAmount)
       ).to.be.revertedWithCustomError(tokenContract, "ERC20InsufficientBalance");
     });
   });

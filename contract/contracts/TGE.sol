@@ -22,7 +22,6 @@ contract TokenFactory {
         TGE newToken = new TGE(name, symbol, initialSupply);
         createdTokens.push(address(newToken));
         
-        // Emit event with the creator, token address, name, and symbol
         emit TokenCreated(msg.sender, address(newToken), name, symbol);
         
         return address(newToken);
