@@ -15,10 +15,16 @@ contract TGE is ERC20 {
 contract TokenFactory {
     address[] public createdTokens;
 
-    // This function will create new TGE tokens and return their address
+    // Event to notify when a new token is created
+    event TokenCreated(address indexed creator, address tokenAddress, string name, string symbol);
+
     function createToken(string memory name, string memory symbol, uint256 initialSupply) public returns (address) {
         TGE newToken = new TGE(name, symbol, initialSupply);
         createdTokens.push(address(newToken));
+        
+        // Emit event with the creator, token address, name, and symbol
+        emit TokenCreated(msg.sender, address(newToken), name, symbol);
+        
         return address(newToken);
     }
 
