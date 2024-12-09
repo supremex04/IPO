@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import TokenFactoryJSON from "../assets/ABI.json"; // Replace with actual ABI path
+import TokenFactoryJSON from "../assets/ABI.json";
 
 const TokenFactoryABI = TokenFactoryJSON.abi;
 const TokenForm = ({ contractAddress }) => {
@@ -59,7 +59,7 @@ const TokenForm = ({ contractAddress }) => {
         setError("Token creation successful, but no token address found in event logs.");
       }
   
-      setForm({ name: "", symbol: "", initialSupply: "" }); // Reset form
+      setForm({ name: "", symbol: "", initialSupply: "" }); 
     } catch (err) {
       console.error("Error creating token:", err);
       setError("Failed to create token. Please check the inputs and try again.");

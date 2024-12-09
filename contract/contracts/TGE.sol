@@ -6,9 +6,8 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract TGE is ERC20 {
     address public creator;
 
-    // Constructor to set up the token and mint the initial supply to the creator
     constructor(string memory name, string memory symbol, uint256 initialSupply, address initialRecipient) ERC20(name, symbol) {
-        creator = initialRecipient; // Set the creator as the initial recipient
+        creator = initialRecipient; 
         _mint(creator, initialSupply * (10**decimals())); // Mint tokens directly to the creator
     }
 }
