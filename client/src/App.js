@@ -3,7 +3,7 @@ import TokenForm from "./components/TokenForm.jsx";
 import WalletConnect from "./components/WalletConnect";
 
 const App = () => {
-  const TGE = "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9";
+  const TGE = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <WalletConnect/>

@@ -40,10 +40,11 @@ const TokenForm = ({ contractAddress }) => {
       const tokenFactoryContract = new ethers.Contract(contractAddress, TokenFactoryABI, signer);
   
       // Call the `createToken` function and retrieve the transaction response
+      const decimals = 18; // Default ERC20 decimals
       const tx = await tokenFactoryContract.createToken(
         form.name,
         form.symbol,
-        ethers.utils.parseEther(form.initialSupply)
+        ethers.utils.parseUnits(form.initialSupply, decimals) 
       );
   
       // Wait for the transaction to be mined

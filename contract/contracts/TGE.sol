@@ -8,7 +8,8 @@ contract TGE is ERC20 {
 
     constructor(string memory name, string memory symbol, uint256 initialSupply, address initialRecipient) ERC20(name, symbol) {
         creator = initialRecipient; 
-        _mint(creator, initialSupply * (10**decimals())); // Mint tokens directly to the creator
+        // _mint(creator, initialSupply * (10**decimals())); 
+        _mint(creator, initialSupply);
     }
 }
 
