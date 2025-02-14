@@ -1,21 +1,16 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import SwapABI from "../assets/Swap.json"; // Swap contract ABI
 import ERC20ABI from "../assets/ERC20.json"; // Standard ERC-20 ABI
 import LiquidityPoolABI from "../assets/LiquidityPool.json"; // Liquidity pool ABI
 
-const SWAP_CONTRACT_ADDRESS = process.env.REACT_APP_SWAP_CONTRACT; // Swap contract address
-
 const Swap = ({ provider }) => {
+  const [poolAddress, setPoolAddress] = useState("");
   const [tokenIn, setTokenIn] = useState("");
   const [amountIn, setAmountIn] = useState("");
-  const [poolAddress, setPoolAddress] = useState("");
   const [amountOut, setAmountOut] = useState(null);
 
   const signer = provider.getSigner();
-  const swapContract = new ethers.Contract(SWAP_CONTRACT_ADDRESS, SwapABI.abi, signer);
 
-  // Perform token swap
   const swapTokens = async () => {
     if (!tokenIn || !amountIn || !poolAddress) {
       alert("Please fill in all fields.");
@@ -32,10 +27,9 @@ const Swap = ({ provider }) => {
       console.log("Amount In (wei):", amountInWei.toString());
       console.log("Pool Address:", poolAddress);
 
-      // Check if token exists in the pool
+      // Fetch tokens in the pool
       const tokenA = await poolContract.tokenA();
       const tokenB = await poolContract.tokenB();
-
       console.log("Pool Token A:", tokenA);
       console.log("Pool Token B:", tokenB);
 
@@ -50,7 +44,6 @@ const Swap = ({ provider }) => {
       // Check pool reserves
       const reserveA = await poolContract.reserveA();
       const reserveB = await poolContract.reserveB();
-
       console.log("Reserve A:", ethers.utils.formatUnits(reserveA, 18));
       console.log("Reserve B:", ethers.utils.formatUnits(reserveB, 18));
 
@@ -69,12 +62,12 @@ const Swap = ({ provider }) => {
       }
 
       // Check allowance
-      const allowance = await tokenContract.allowance(userAddress, SWAP_CONTRACT_ADDRESS);
+      const allowance = await tokenContract.allowance(userAddress, poolAddress);
       console.log("Allowance:", ethers.utils.formatUnits(allowance, 18));
 
       if (allowance.lt(amountInWei)) {
         console.log(`Approving ${amountIn} tokens...`);
-        const approveTx = await tokenContract.approve(SWAP_CONTRACT_ADDRESS, amountInWei);
+        const approveTx = await tokenContract.approve(poolAddress, amountInWei);
         await approveTx.wait();
         console.log("Approval successful!");
       } else {
@@ -82,15 +75,15 @@ const Swap = ({ provider }) => {
       }
 
       console.log("Executing swap...");
-      const tx = await swapContract.executeSwap(poolAddress, tokenIn, amountInWei);
+      const tx = await poolContract.swap(tokenIn, amountInWei);
       const receipt = await tx.wait();
 
       // Extract swap event
-      const event = receipt.events.find(e => e.event === "SwapExecuted");
+      const event = receipt.events.find(e => e.event === "Swapped");
       if (event) {
         const swappedAmountOut = event.args.amountOut;
         setAmountOut(ethers.utils.formatUnits(swappedAmountOut, 18));
-        alert(`Swap Successful! Received ${ethers.utils.formatUnits(swappedAmountOut, 18)} tokens.`);
+        alert(`Swap Successful! Received ${ethers.utils.formatUnits(swappedAmountOut, 18)} ${tokenOut}.`);
       } else {
         alert("Swap executed but no event found.");
       }
@@ -104,9 +97,9 @@ const Swap = ({ provider }) => {
   return (
     <div className="swap-container">
       <h2>Swap Tokens</h2>
+      <input type="text" placeholder="Liquidity Pool Address" value={poolAddress} onChange={(e) => setPoolAddress(e.target.value)} className="input-field" />
       <input type="text" placeholder="Token In Address" value={tokenIn} onChange={(e) => setTokenIn(e.target.value)} className="input-field" />
       <input type="text" placeholder="Amount In" value={amountIn} onChange={(e) => setAmountIn(e.target.value)} className="input-field"/>
-      <input type="text" placeholder="Liquidity Pool Address" value={poolAddress} onChange={(e) => setPoolAddress(e.target.value)} className="input-field" />
       <button onClick={swapTokens}>Swap</button>
       {amountOut && <p>Received: {amountOut} tokens</p>}
     </div>

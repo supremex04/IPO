@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import LiquidityPoolFactoryABI from "../assets/LiqFactory.json"; // Factory ABI
-import LiquidityPoolABI from "../assets/LiquidityPool.json"; // Pool ABI
-import ERC20ABI from "../assets/ERC20.json"; // ERC-20 ABI
+import LiquidityPoolFactoryABI from "../assets/LiqFactory.json";
+import LiquidityPoolABI from "../assets/LiquidityPool.json";
+import ERC20ABI from "../assets/ERC20.json";
 import "../App.css";
 
 const FACTORY_ADDRESS = process.env.REACT_APP_LIQUIDITY_FACTORY_CONTRACT;
@@ -21,7 +21,6 @@ const LiquidityPool = ({ provider }) => {
   const signer = provider.getSigner();
   const factoryContract = new ethers.Contract(FACTORY_ADDRESS, LiquidityPoolFactoryABI.abi, signer);
 
-  /* Create a new Liquidity Pool */
   const createPool = async () => {
     try {
       const tx = await factoryContract.createPool(tokenA, tokenB);
@@ -33,7 +32,6 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /* Fetch existing Liquidity Pools */
   const fetchPools = async () => {
     try {
       const pools = await factoryContract.getAllPools();
@@ -43,7 +41,6 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /*Fetch Pool Reserves & Token Symbols */
   const fetchPoolDetails = async (poolAddress) => {
     try {
       if (!poolAddress) return;
@@ -72,7 +69,6 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /* Add Liquidity (Proportional) */
   const addLiquidity = async () => {
     if (!selectedPool || !liquidityAmount) {
       alert("Please select a pool and enter liquidity amount.");
@@ -81,15 +77,14 @@ const LiquidityPool = ({ provider }) => {
 
     try {
       const poolContract = new ethers.Contract(selectedPool, LiquidityPoolABI.abi, signer);
-      const tokenA = await poolContract.tokenA();
-      const tokenB = await poolContract.tokenB();
+      const tokenAAddress = await poolContract.tokenA();
+      const tokenBAddress = await poolContract.tokenB();
 
-      const tokenAContract = new ethers.Contract(tokenA, ERC20ABI, signer);
-      const tokenBContract = new ethers.Contract(tokenB, ERC20ABI, signer);
+      const tokenAContract = new ethers.Contract(tokenAAddress, ERC20ABI, signer);
+      const tokenBContract = new ethers.Contract(tokenBAddress, ERC20ABI, signer);
 
       const amount = ethers.utils.parseUnits(liquidityAmount, 18);
 
-      // Proportional deposit calculation
       const reserveA = await poolContract.reserveA();
       const reserveB = await poolContract.reserveB();
       const totalLiquidity = reserveA.add(reserveB);
@@ -97,13 +92,11 @@ const LiquidityPool = ({ provider }) => {
       const amountA = reserveA.eq(0) ? amount : amount.mul(reserveA).div(totalLiquidity);
       const amountB = reserveB.eq(0) ? amount : amount.mul(reserveB).div(totalLiquidity);
 
-      // Approvals
       const approveA = await tokenAContract.approve(selectedPool, amountA);
       await approveA.wait();
       const approveB = await tokenBContract.approve(selectedPool, amountB);
       await approveB.wait();
 
-      // Add liquidity
       const tx = await poolContract.addLiquidity(amountA, amountB);
       await tx.wait();
 
@@ -114,7 +107,6 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /** Handle Pool Selection */
   const handlePoolChange = async (e) => {
     const poolAddress = e.target.value;
     setSelectedPool(poolAddress);
