@@ -32,7 +32,7 @@ const Swap = ({ provider }) => {
       console.log("Amount In (wei):", amountInWei.toString());
       console.log("Pool Address:", poolAddress);
 
-      // ✅ Check if token exists in the pool
+      // Check if token exists in the pool
       const tokenA = await poolContract.tokenA();
       const tokenB = await poolContract.tokenB();
 
@@ -47,7 +47,7 @@ const Swap = ({ provider }) => {
       const tokenOut = tokenIn === tokenA ? tokenB : tokenA;
       console.log("Token Out:", tokenOut);
 
-      // ✅ Check pool reserves
+      // Check pool reserves
       const reserveA = await poolContract.reserveA();
       const reserveB = await poolContract.reserveB();
 
@@ -59,7 +59,7 @@ const Swap = ({ provider }) => {
         return;
       }
 
-      // ✅ Check user balance
+      // Check user balance
       const userBalance = await tokenContract.balanceOf(userAddress);
       console.log("User Balance:", ethers.utils.formatUnits(userBalance, 18));
 
@@ -68,7 +68,7 @@ const Swap = ({ provider }) => {
         return;
       }
 
-      // ✅ Check allowance
+      // Check allowance
       const allowance = await tokenContract.allowance(userAddress, SWAP_CONTRACT_ADDRESS);
       console.log("Allowance:", ethers.utils.formatUnits(allowance, 18));
 
@@ -81,12 +81,11 @@ const Swap = ({ provider }) => {
         console.log("Tokens already approved.");
       }
 
-      // ✅ Execute Swap
       console.log("Executing swap...");
       const tx = await swapContract.executeSwap(poolAddress, tokenIn, amountInWei);
       const receipt = await tx.wait();
 
-      // ✅ Extract swap event
+      // Extract swap event
       const event = receipt.events.find(e => e.event === "SwapExecuted");
       if (event) {
         const swappedAmountOut = event.args.amountOut;

@@ -21,7 +21,7 @@ const LiquidityPool = ({ provider }) => {
   const signer = provider.getSigner();
   const factoryContract = new ethers.Contract(FACTORY_ADDRESS, LiquidityPoolFactoryABI.abi, signer);
 
-  /** 📌 Create a new Liquidity Pool */
+  /* Create a new Liquidity Pool */
   const createPool = async () => {
     try {
       const tx = await factoryContract.createPool(tokenA, tokenB);
@@ -33,7 +33,7 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /** 📌 Fetch existing Liquidity Pools */
+  /* Fetch existing Liquidity Pools */
   const fetchPools = async () => {
     try {
       const pools = await factoryContract.getAllPools();
@@ -43,7 +43,7 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /** 📌 Fetch Pool Reserves & Token Symbols */
+  /*Fetch Pool Reserves & Token Symbols */
   const fetchPoolDetails = async (poolAddress) => {
     try {
       if (!poolAddress) return;
@@ -72,7 +72,7 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /** 📌 Add Liquidity (Proportional) */
+  /* Add Liquidity (Proportional) */
   const addLiquidity = async () => {
     if (!selectedPool || !liquidityAmount) {
       alert("Please select a pool and enter liquidity amount.");
@@ -114,7 +114,7 @@ const LiquidityPool = ({ provider }) => {
     }
   };
 
-  /** 📌 Handle Pool Selection */
+  /** Handle Pool Selection */
   const handlePoolChange = async (e) => {
     const poolAddress = e.target.value;
     setSelectedPool(poolAddress);
