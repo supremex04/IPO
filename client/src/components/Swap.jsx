@@ -4,21 +4,20 @@ import SwapABI from "../assets/Swap.json"; // Swap contract ABI
 import ERC20ABI from "../assets/ERC20.json"; // Standard ERC-20 ABI
 import LiquidityPoolABI from "../assets/LiquidityPool.json"; // Liquidity pool ABI
 
-// const SWAP_CONTRACT_ADDRESS = "0xb4f4E9fA0e258E4a179082CDe9c377632109E5C8"; // Swap contract address
 const SWAP_CONTRACT_ADDRESS = process.env.REACT_APP_SWAP_CONTRACT; // Swap contract address
 
 const Swap = ({ provider }) => {
   const [tokenIn, setTokenIn] = useState("");
-  const [tokenOut, setTokenOut] = useState("");
   const [amountIn, setAmountIn] = useState("");
   const [poolAddress, setPoolAddress] = useState("");
+  const [amountOut, setAmountOut] = useState(null);
 
   const signer = provider.getSigner();
   const swapContract = new ethers.Contract(SWAP_CONTRACT_ADDRESS, SwapABI.abi, signer);
 
   // Perform token swap
   const swapTokens = async () => {
-    if (!tokenIn || !tokenOut || !amountIn || !poolAddress) {
+    if (!tokenIn || !amountIn || !poolAddress) {
       alert("Please fill in all fields.");
       return;
     }
@@ -29,23 +28,24 @@ const Swap = ({ provider }) => {
       const poolContract = new ethers.Contract(poolAddress, LiquidityPoolABI.abi, signer);
       const userAddress = await signer.getAddress();
 
-      // ✅ Debugging logs
       console.log("Token In:", tokenIn);
-      console.log("Token Out:", tokenOut);
       console.log("Amount In (wei):", amountInWei.toString());
       console.log("Pool Address:", poolAddress);
 
-      // ✅ Check if tokens exist in the pool
+      // ✅ Check if token exists in the pool
       const tokenA = await poolContract.tokenA();
       const tokenB = await poolContract.tokenB();
 
       console.log("Pool Token A:", tokenA);
       console.log("Pool Token B:", tokenB);
 
-      if (![tokenA, tokenB].includes(tokenIn) || ![tokenA, tokenB].includes(tokenOut)) {
-        alert("Selected tokens do not match the pool!");
+      if (![tokenA, tokenB].includes(tokenIn)) {
+        alert("Selected token is not part of the pool!");
         return;
       }
+
+      const tokenOut = tokenIn === tokenA ? tokenB : tokenA;
+      console.log("Token Out:", tokenOut);
 
       // ✅ Check pool reserves
       const reserveA = await poolContract.reserveA();
@@ -83,9 +83,19 @@ const Swap = ({ provider }) => {
 
       // ✅ Execute Swap
       console.log("Executing swap...");
-      const tx = await swapContract.swap(tokenIn, tokenOut, amountInWei, poolAddress);
-      await tx.wait();
-      alert("Swap Successful!");
+      const tx = await swapContract.executeSwap(poolAddress, tokenIn, amountInWei);
+      const receipt = await tx.wait();
+
+      // ✅ Extract swap event
+      const event = receipt.events.find(e => e.event === "SwapExecuted");
+      if (event) {
+        const swappedAmountOut = event.args.amountOut;
+        setAmountOut(ethers.utils.formatUnits(swappedAmountOut, 18));
+        alert(`Swap Successful! Received ${ethers.utils.formatUnits(swappedAmountOut, 18)} tokens.`);
+      } else {
+        alert("Swap executed but no event found.");
+      }
+
     } catch (error) {
       console.error("Error swapping tokens:", error);
       alert(`Swap failed: ${error.message || JSON.stringify(error)}`);
@@ -96,10 +106,10 @@ const Swap = ({ provider }) => {
     <div className="swap-container">
       <h2>Swap Tokens</h2>
       <input type="text" placeholder="Token In Address" value={tokenIn} onChange={(e) => setTokenIn(e.target.value)} className="input-field" />
-      <input type="text" placeholder="Token Out Address" value={tokenOut} onChange={(e) => setTokenOut(e.target.value)} className="input-field"/>
       <input type="text" placeholder="Amount In" value={amountIn} onChange={(e) => setAmountIn(e.target.value)} className="input-field"/>
       <input type="text" placeholder="Liquidity Pool Address" value={poolAddress} onChange={(e) => setPoolAddress(e.target.value)} className="input-field" />
       <button onClick={swapTokens}>Swap</button>
+      {amountOut && <p>Received: {amountOut} tokens</p>}
     </div>
   );
 };
