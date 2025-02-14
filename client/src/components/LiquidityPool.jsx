@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import LiquidityPoolFactoryABI from "../assets/LiqFactory.json"; // LiquidityPoolFactory ABI
 import LiquidityPoolABI from "../assets/LiquidityPool.json"; // LiquidityPool ABI
-import ERC20ABI from "../assets/ERC20.json"; // Standard ERC-20 ABI
-
-const FACTORY_ADDRESS = "0x15564f2D166dE7DC63b71a6CA684178412d26fa9"; // LiquidityPoolFactory contract address
-
+import ERC20ABI from "../assets/ERC20.json"; 
+import "../App.css"
+// const FACTORY_ADDRESS = "0xCdFC4680EE2062720747C689CdbFD9eD65bafD42"; // LiquidityPoolFactory contract address
+const FACTORY_ADDRESS = process.env.REACT_APP_LIQUIDITY_FACTORY_CONTRACT;
 const LiquidityPool = ({ provider }) => {
   const [tokenA, setTokenA] = useState("");
   const [tokenB, setTokenB] = useState("");
@@ -136,12 +136,12 @@ const LiquidityPool = ({ provider }) => {
   return (
     <div className="liquidity-container">
       <h2>Create Liquidity Pool</h2>
-      <input type="text" placeholder="Token A Address" value={tokenA} onChange={(e) => setTokenA(e.target.value)} />
-      <input type="text" placeholder="Token B Address" value={tokenB} onChange={(e) => setTokenB(e.target.value)} />
+      <input type="text" placeholder="Token A Address" value={tokenA} onChange={(e) => setTokenA(e.target.value)} className="input-field"/>
+      <input type="text" placeholder="Token B Address" value={tokenB} onChange={(e) => setTokenB(e.target.value)} className="input-field"/>
       <button onClick={createPool}>Create Pool</button>
 
       <h3>Existing Pools</h3>
-      <select onChange={handlePoolChange}>
+      <select onChange={handlePoolChange} className="select-field">
         <option value="">Select a Pool</option>
         {allPools.map((pool, index) => (
           <option key={index} value={pool}>
@@ -149,7 +149,6 @@ const LiquidityPool = ({ provider }) => {
           </option>
         ))}
       </select>
-
       {/* Display Pool Address & Reserves with Token Symbols */}
       {selectedPool && (
         <div>
@@ -172,12 +171,14 @@ const LiquidityPool = ({ provider }) => {
         placeholder="Amount A"
         value={liquidityAmountA}
         onChange={(e) => setLiquidityAmountA(e.target.value)}
+        className="input-field"
       />
       <input
         type="text"
         placeholder="Amount B"
         value={liquidityAmountB}
         onChange={(e) => setLiquidityAmountB(e.target.value)}
+        className="input-field"
       />
       <button onClick={addLiquidity}>Add Liquidity</button>
     </div>

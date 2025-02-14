@@ -8,13 +8,13 @@ const Navbar = () => {
     <header className="navbar">
       <div className="nav-left">
         <Link to="/" className="nav-button">Home</Link>
-        <Link to="/tokenform" className="nav-button">Token Form</Link>
+        <Link to="/tokenform" className="nav-button">Tokenization Form</Link>
         <Link to="/liquiditypool" className="nav-button">Liquidity Pool</Link>
         <Link to="/swap" className="nav-button">Swap</Link>
 
       </div>
 
-      <h1 className="app-title">Trading App</h1>
+      <h1 className="app-title">Securities Exchange Platform</h1>
 
       <div className="nav-right">
         <WalletConnect />

@@ -12,6 +12,7 @@ contract LiquidityPool {
 
     event LiquidityAdded(address indexed provider, uint256 amountA, uint256 amountB);
     event LiquidityRemoved(address indexed provider, uint256 amountA, uint256 amountB);
+    event SwapTransfer(address indexed token, address indexed recipient, uint256 amount);
 
     constructor(address _tokenA, address _tokenB) {
         tokenA = _tokenA;
@@ -40,5 +41,16 @@ contract LiquidityPool {
         IERC20(tokenB).transfer(msg.sender, amountB);
 
         emit LiquidityRemoved(msg.sender, amountA, amountB);
+    }
+
+    function swapTransfer(address token, address recipient, uint256 amount) external {
+        require(token == tokenA || token == tokenB, "Invalid token");
+        require(IERC20(token).transfer(recipient, amount), "Transfer failed");
+        emit SwapTransfer(token, recipient, amount);
+    }
+
+    function updateReserves(uint256 newReserveA, uint256 newReserveB) external {
+        reserveA = newReserveA;
+        reserveB = newReserveB;
     }
 }

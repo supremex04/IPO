@@ -183,3 +183,35 @@ button {
 button:hover {
   background: #45a049;
 }
+
+.input-field {
+  width: 30%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #333;
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+.select-field {
+  width: 30%;
+  padding: 12px; /* Increased padding for more height */
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #3a3a3a; /* Slightly lighter than input field */
+  color: #fff;
+  font-size: 16px; /* Slightly bigger text */
+  appearance: none; /* Removes default styles */
+  cursor: pointer;
+}
+
+.select-field option {
+  background-color: #2c2c2c; /* Matches input field */
+  color: #fff;
+  padding: 10px; /* Increased padding inside dropdown options */
+}
+
+.select-field:focus {
+  outline: none;
+  border-color: #666; /* Subtle highlight on focus */
+}

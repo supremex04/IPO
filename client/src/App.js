@@ -9,7 +9,7 @@ import LiquidityPool from "./components/LiquidityPool";
 import Swap from "./components/Swap";
 
 
-const TGE = "0x48aC8270F91A6B34C4ac60def5ff3B25514f5a6A";
+const TGE = process.env.REACT_APP_TGE_CONTRACT;
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const App = () => {

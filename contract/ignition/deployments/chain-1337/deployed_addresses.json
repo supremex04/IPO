@@ -1,6 +1,4 @@
 {
-  "TokenFactoryModule#TokenFactory": "0x48aC8270F91A6B34C4ac60def5ff3B25514f5a6A",
-  "LiquidityPoolModule#LiquidityPoolFactory": "0xBC7B7296D2d0723AE85112FedD4b432821f091c9",
-  "LiquiditySwapModule#LiquidityPoolFactory": "0x15564f2D166dE7DC63b71a6CA684178412d26fa9",
-  "LiquiditySwapModule#Swap": "0x50815A27CE6D5CC791c011DA2d1a6903A3430f69"
+  "LiquiditySwapModule#LiquidityPoolFactory": "0xCdFC4680EE2062720747C689CdbFD9eD65bafD42",
+  "LiquiditySwapModule#Swap": "0xb4f4E9fA0e258E4a179082CDe9c377632109E5C8"
 }

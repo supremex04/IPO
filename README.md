@@ -1,21 +1,15 @@
-# initiation
-fork
 
-clone
-
-# installing required setups
-main folder - npm install
-
-client folder - npm install
-
-contract folder- npm install
 # running the project
-inside client folder - npm run start (runs website)
 
-inside contract folder - npx hardhat node (runs local blockchain)
+inside contract folder - npx hardhat node (runs local blockchain)/ I am testing this on Ganache
 # setup metamask
 chainid - 31337
 
-rpc - http://127.0.0.1:8545/
+rpc - http://127.0.0.1:7545/ 
 
+# inside contract
+
+rm -rf artifacts cache 
+npx hardhat ignition deploy ./ignition/modules/TGE.js --network ganache
+npx hardhat ignition deploy ./ignition/modules/LiquidityPoolFactory.js --network ganache
 

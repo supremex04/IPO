@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "hardhat": "^2.22.16"
+    "hardhat": "^2.22.16",
+    "react-dotenv": "^0.1.3"
   }
 }
