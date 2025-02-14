@@ -104,4 +104,58 @@
     padding: 20px;
     text-align: center;
   }
-  
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #1e1e1e;
+  border-bottom: 2px solid #333;
+}
+
+/* Left side navigation */
+.nav-left {
+  display: flex;
+  gap: 10px;
+}
+
+/* Home & Token Form Buttons */
+.nav-button {
+  text-decoration: none;
+  color: #fff;
+  background: #333;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.nav-button:hover {
+  background: #555;
+}
+
+/* Title in the center */
+.app-title {
+  font-size: 22px;
+  color: #fff;
+  text-align: center;
+  flex-grow: 1;
+}
+
+/* Right side WalletConnect */
+.nav-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Main Content */
+.app-container {
+  background-color: #121212;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.content {
+  padding: 20px;
+  text-align: center;
+}
