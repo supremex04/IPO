@@ -1,0 +1,5 @@
+{
+  "TokenFactoryModule#TokenFactory": "0x84e3e3AdA8b3420533C219e84c2d1f84C8742f16",
+  "LiquiditySwapModule#LiquidityPoolFactory": "0x931ca57Ca0496878448dd536C4281bc4e4614154",
+  "LiquiditySwapModule#Swap": "0xBaA2cd60C3078A5E2431C80dCbAa69D3c5D00FA8"
+}
