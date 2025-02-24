@@ -1,107 +1,227 @@
+// Swap.jsx
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import ERC20ABI from "../assets/ERC20.json"; // Standard ERC-20 ABI
-import LiquidityPoolABI from "../assets/LiquidityPool.json"; // Liquidity pool ABI
+import ERC20ABI from "../assets/ERC20.json";
+import LiquidityPoolABI from "../assets/LiquidityPool.json";
+import {
+  FaExchangeAlt,
+  FaWallet,
+  FaCoins,
+  FaSpinner,
+  FaExclamationCircle,
+} from "react-icons/fa";
+import "../App.css";
 
 const Swap = ({ provider }) => {
   const [poolAddress, setPoolAddress] = useState("");
   const [tokenIn, setTokenIn] = useState("");
   const [amountIn, setAmountIn] = useState("");
   const [amountOut, setAmountOut] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [poolTokens, setPoolTokens] = useState({
+    tokenA: "",
+    tokenB: "",
+    reserveA: "0",
+    reserveB: "0",
+  });
 
-  const signer = provider.getSigner();
+  // Safely handle provider
+  const signer = provider ? provider.getSigner() : null;
+
+  const fetchPoolDetails = async (address) => {
+    if (!provider || !address) return;
+    try {
+      const poolContract = new ethers.Contract(
+        address,
+        LiquidityPoolABI.abi,
+        signer
+      );
+      const [tokenA, tokenB, reserveA, reserveB] = await Promise.all([
+        poolContract.tokenA(),
+        poolContract.tokenB(),
+        poolContract.reserveA(),
+        poolContract.reserveB(),
+      ]);
+      setPoolTokens({
+        tokenA,
+        tokenB,
+        reserveA: ethers.utils.formatUnits(reserveA, 18),
+        reserveB: ethers.utils.formatUnits(reserveB, 18),
+      });
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching pool details:", error);
+      setError(
+        "Invalid pool address or network error. Please check and try again."
+      );
+    }
+  };
 
   const swapTokens = async () => {
+    if (!provider || !signer) {
+      setError(
+        "MetaMask is required to swap tokens. Please connect your wallet."
+      );
+      return;
+    }
     if (!tokenIn || !amountIn || !poolAddress) {
-      alert("Please fill in all fields.");
+      setError("Please fill in all fields.");
       return;
     }
 
     try {
+      setLoading(true);
+      setError(null);
       const amountInWei = ethers.utils.parseUnits(amountIn, 18);
       const tokenContract = new ethers.Contract(tokenIn, ERC20ABI, signer);
-      const poolContract = new ethers.Contract(poolAddress, LiquidityPoolABI.abi, signer);
+      const poolContract = new ethers.Contract(
+        poolAddress,
+        LiquidityPoolABI.abi,
+        signer
+      );
       const userAddress = await signer.getAddress();
 
-      console.log("Token In:", tokenIn);
-      console.log("Amount In (wei):", amountInWei.toString());
-      console.log("Pool Address:", poolAddress);
-
-      // Fetch tokens in the pool
       const tokenA = await poolContract.tokenA();
       const tokenB = await poolContract.tokenB();
-      console.log("Pool Token A:", tokenA);
-      console.log("Pool Token B:", tokenB);
 
       if (![tokenA, tokenB].includes(tokenIn)) {
-        alert("Selected token is not part of the pool!");
+        setError("Selected token is not part of the pool!");
         return;
       }
 
       const tokenOut = tokenIn === tokenA ? tokenB : tokenA;
-      console.log("Token Out:", tokenOut);
-
-      // Check pool reserves
       const reserveA = await poolContract.reserveA();
       const reserveB = await poolContract.reserveB();
-      console.log("Reserve A:", ethers.utils.formatUnits(reserveA, 18));
-      console.log("Reserve B:", ethers.utils.formatUnits(reserveB, 18));
 
       if (reserveA.eq(0) || reserveB.eq(0)) {
-        alert("The selected pool has no liquidity.");
+        setError("The selected pool has no liquidity.");
         return;
       }
 
-      // Check user balance
       const userBalance = await tokenContract.balanceOf(userAddress);
-      console.log("User Balance:", ethers.utils.formatUnits(userBalance, 18));
-
       if (userBalance.lt(amountInWei)) {
-        alert("Insufficient token balance!");
+        setError("Insufficient token balance!");
         return;
       }
 
-      // Check allowance
       const allowance = await tokenContract.allowance(userAddress, poolAddress);
-      console.log("Allowance:", ethers.utils.formatUnits(allowance, 18));
-
       if (allowance.lt(amountInWei)) {
-        console.log(`Approving ${amountIn} tokens...`);
         const approveTx = await tokenContract.approve(poolAddress, amountInWei);
         await approveTx.wait();
-        console.log("Approval successful!");
-      } else {
-        console.log("Tokens already approved.");
       }
 
-      console.log("Executing swap...");
       const tx = await poolContract.swap(tokenIn, amountInWei);
       const receipt = await tx.wait();
 
-      // Extract swap event
-      const event = receipt.events.find(e => e.event === "Swapped");
+      const event = receipt.events.find((e) => e.event === "Swapped");
       if (event) {
         const swappedAmountOut = event.args.amountOut;
-        setAmountOut(ethers.utils.formatUnits(swappedAmountOut, 18));
-        alert(`Swap Successful! Received ${ethers.utils.formatUnits(swappedAmountOut, 18)} ${tokenOut}.`);
+        const formattedAmountOut = ethers.utils.formatUnits(
+          swappedAmountOut,
+          18
+        );
+        setAmountOut(formattedAmountOut);
+        alert(
+          `Swap Successful! Received ${formattedAmountOut} tokens (${tokenOut}).`
+        );
       } else {
-        alert("Swap executed but no event found.");
+        setError("Swap executed but no event found.");
       }
 
+      fetchPoolDetails(poolAddress);
+      setAmountIn("");
     } catch (error) {
       console.error("Error swapping tokens:", error);
-      alert(`Swap failed: ${error.message || JSON.stringify(error)}`);
+      setError(`Swap failed: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handlePoolAddressChange = (e) => {
+    const address = e.target.value;
+    setPoolAddress(address);
+    fetchPoolDetails(address);
+  };
+
   return (
-    <div className="swap-container">
-      <h2>Swap Tokens</h2>
-      <input type="text" placeholder="Liquidity Pool Address" value={poolAddress} onChange={(e) => setPoolAddress(e.target.value)} className="input-field" />
-      <input type="text" placeholder="Token In Address" value={tokenIn} onChange={(e) => setTokenIn(e.target.value)} className="input-field" />
-      <input type="text" placeholder="Amount In" value={amountIn} onChange={(e) => setAmountIn(e.target.value)} className="input-field"/>
-      <button onClick={swapTokens}>Swap</button>
-      {amountOut && <p>Received: {amountOut} tokens</p>}
+    <div className='swap-container'>
+      <div className='swap-grid'>
+        {/* Column 1: Pool Selection */}
+        <div className='swap-section'>
+          <h2 className='section-title'>
+            <FaWallet className='section-icon' /> Pool Info
+          </h2>
+          <input
+            type='text'
+            placeholder='Liquidity Pool Address'
+            value={poolAddress}
+            onChange={handlePoolAddressChange}
+            className='input-field'
+            disabled={loading || !provider}
+          />
+          <div className='pool-info'>
+            <p>Token A: {poolTokens.reserveA}</p>
+            <p>Token B: {poolTokens.reserveB}</p>
+          </div>
+        </div>
+
+        {/* Column 2: Token Input */}
+        <div className='swap-section'>
+          <h2 className='section-title'>
+            <FaCoins className='section-icon' /> Swap Input
+          </h2>
+          <input
+            type='text'
+            placeholder='Token In Address'
+            value={tokenIn}
+            onChange={(e) => setTokenIn(e.target.value)}
+            className='input-field'
+            disabled={loading || !provider}
+          />
+          <input
+            type='text'
+            placeholder='Amount In'
+            value={amountIn}
+            onChange={(e) => setAmountIn(e.target.value)}
+            className='input-field'
+            disabled={loading || !provider}
+          />
+        </div>
+
+        {/* Column 3: Swap Action */}
+        <div className='swap-section'>
+          <h2 className='section-title'>
+            <FaExchangeAlt className='section-icon' /> Swap Output
+          </h2>
+          <button
+            onClick={swapTokens}
+            className='action-btn'
+            disabled={loading || !provider}
+          >
+            {loading ? (
+              <>
+                <FaSpinner className='spin-icon' /> Swapping...
+              </>
+            ) : (
+              <>
+                <FaExchangeAlt className='btn-icon' /> Swap Tokens
+              </>
+            )}
+          </button>
+          {amountOut && (
+            <div className='swap-result'>
+              <p>Received: {amountOut} tokens</p>
+            </div>
+          )}
+        </div>
+      </div>
+      {error && (
+        <div className='error-message'>
+          <FaExclamationCircle className='error-icon' /> {error}
+        </div>
+      )}
     </div>
   );
 };

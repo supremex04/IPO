@@ -4,7 +4,6 @@
 
 and copy the TGE contract, Liquidity Factory contract and swap contract to .env file on client directory
 
-
 If you create changes to contracts, you also need to update ABIs, copy the compiled abis (location: artifacts/contracts/<contracts you changed>/file.json) to client/src/asset/corresponding json
 
 TGE.json = ABI.json
