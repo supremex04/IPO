@@ -1,79 +1,111 @@
-import React from "react";
-import "../App.css";
+import React, { useEffect, useState } from "react";
+import "../InfoSection.css";
 
 const InfoSection = () => {
+  const [flippedCards, setFlippedCards] = useState([false, false, false, false]);
+  
+  useEffect(() => {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      const newFlippedCards = [...flippedCards];
+      newFlippedCards[currentIndex] = !newFlippedCards[currentIndex];
+      setFlippedCards(newFlippedCards);
+      currentIndex = (currentIndex + 1) % 4;
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [flippedCards]);
+  
+  const handleCardClick = (index) => {
+    const newFlippedCards = [...flippedCards];
+    newFlippedCards[index] = !newFlippedCards[index];
+    setFlippedCards(newFlippedCards);
+  };
+  
   return (
-    <section className='info-section'>
-      <div className='container'>
-        <h2 className='section-title'>Nepali Blockchain Financial Market</h2>
-
-        <div className='info-block'>
-          <h3>1. Background</h3>
-          <p>
-            The Nepali financial market, while growing, lacks an efficient
-            platform for public offerings and liquidity management. The stock
-            market and IPO processes are often centralized and bureaucratic,
-            leading to delays, inefficiencies, and a lack of accessibility for a
-            broader segment of the population. Blockchain technology has the
-            potential to transform this landscape by decentralizing the
-            processes of issuing shares, tokenizing the Nepali Rupee (NPR), and
-            providing an open and transparent platform for Initial Public
-            Offerings (IPOs).
-          </p>
+    <div className="page-container">
+      <h1 className="page-title"> SECURUTIES EXCHANGE PLATFORM</h1>
+      
+      <div className="flashcards-container">
+        {/* Card 1 */}
+        <div 
+          className={`flashcard ${flippedCards[0] ? "flipped" : ""}`} 
+          onClick={() => handleCardClick(0)}
+        >
+          <div className="flashcard-inner">
+            <div className="flashcard-front">
+              <h2 className="card-title">DECENTRALIZED TRADING</h2>
+              {/* <p>Click Here</p> */}
+            </div>
+            <div className="flashcard-back">
+              <h3 className="card-title">DECENTRALIZED TRADING</h3>
+              <p className="card-content">
+              Peer-to-peer transactions without intermediaries, ensuring faster, cheaper, and transparent trades on an immutable ledger.
+              </p>
+            </div>
+          </div>
         </div>
-
-        <div className='info-block'>
-          <h3>2. Problem Statement</h3>
-          <p>
-            The current financial system in Nepal, specifically for stock market
-            transactions, is hindered by inefficiencies in share issuance,
-            trading, and liquidity management. With the potential to improve
-            transparency, reduce costs, and improve accessibility, blockchain
-            can address these problems. This project aims to create an IPO
-            platform on blockchain, tokenize NPR, and integrate liquidity pools
-            on decentralized exchanges to provide a more efficient and scalable
-            solution.
-          </p>
+        
+        {/* Card 2 */}
+        <div 
+          className={`flashcard ${flippedCards[1] ? "flipped" : ""}`} 
+          onClick={() => handleCardClick(1)}
+        >
+          <div className="flashcard-inner">
+            <div className="flashcard-front">
+              <h2 className="card-title">ENHANCED SECURITY</h2>
+              {/* <p>Click Here</p> */}
+            </div>
+            <div className="flashcard-back">
+              <h3 className="card-title">ENHANCED SECURITY</h3>
+              <p className="card-content">
+              Blockchain's cryptography and decentralization protect against hacking and fraud, eliminating single points of failure.
+              </p>
+            </div>
+          </div>
         </div>
-
-        <div className='info-block'>
-          <h3>3. Objectives</h3>
-          <ul>
-            <li>
-              Tokenization of NPR: Create a blockchain-based token representing
-              the Nepali Rupee (NPR) that is pegged 1:1 to the actual currency.
-            </li>
-            <li>
-              IPO Platform Development: Design and implement an Initial Public
-              Offering (IPO) platform where companies can issue shares as tokens
-              on the blockchain.
-            </li>
-            <li>
-              Liquidity Pools and AMM Integration: Develop liquidity pools in
-              Uniswap v3 to ensure liquidity for trading NPR and company tokens.
-            </li>
-            <li>
-              Consortium Deployment: Deploy the blockchain solution on a
-              consortium blockchain to ensure secure and controlled
-              participation.
-            </li>
-          </ul>
+        
+        {/* Card 3 */}
+        <div 
+          className={`flashcard ${flippedCards[2] ? "flipped" : ""}`} 
+          onClick={() => handleCardClick(2)}
+        >
+          <div className="flashcard-inner">
+            <div className="flashcard-front">
+              <h2 className="card-title">TOKENIZED ASSETS</h2>
+              {/* <p>Click Here</p> */}
+            </div>
+            <div className="flashcard-back">
+              <h3 className="card-title">TOKENIZED ASSETS</h3>
+              <div className="card-content">
+                <p>
+                Traditional securities (stocks, bonds, etc.) are digitized into tokens, enabling seamless trading and broader investment options.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div className='info-block'>
-          <h3>4. Scope</h3>
-          <p>
-            This project covers the tokenization of the Nepali Rupee, the
-            development of an IPO platform, and integration with Uniswap v3 for
-            liquidity pools. The solution will be deployed on a public
-            blockchain in a consortium, with an emphasis on security,
-            scalability, and accessibility. The project will also ensure
-            compliance with regulatory frameworks for blockchain-based financial
-            applications.
-          </p>
+        
+        {/* Card 4 */}
+        <div 
+          className={`flashcard ${flippedCards[3] ? "flipped" : ""}`} 
+          onClick={() => handleCardClick(3)}
+        >
+          <div className="flashcard-inner">
+            <div className="flashcard-front">
+              <h2 className="card-title">REAL-TIME SETTLEMENT</h2>
+              {/* <p>Click Here</p> */}
+            </div>
+            <div className="flashcard-back">
+              <h3 className="card-title">REAL-TIME SETTLEMENT</h3>
+              <p className="card-content">
+              Smart contracts automate and settle trades instantly, reducing delays and counterparty risk compared to traditional systems.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

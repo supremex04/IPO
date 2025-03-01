@@ -45,7 +45,7 @@ const StatsSection = () => {
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default StatsSection;
