@@ -34,61 +34,55 @@ const TokenForm = ({ contractAddress, provider }) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage("");
-
+  
     if (!provider) {
-      setError(
-        "MetaMask is required to create a token. Please connect your wallet."
-      );
+      setError("MetaMask is required to create a token. Please connect your wallet.");
       return;
     }
-
+  
     try {
       setLoading(true);
       const signer = provider.getSigner();
-      const tokenFactoryContract = new ethers.Contract(
-        contractAddress,
-        TokenFactoryABI,
-        signer
-      );
-
+      const tokenFactoryContract = new ethers.Contract(contractAddress, TokenFactoryABI, signer);
+  
       const decimals = 18;
-      const initialSupplyWei = ethers.utils.parseUnits(
-        form.initialSupply,
-        decimals
-      );
-
-      const tx = await tokenFactoryContract.createToken(
-        form.name,
-        form.symbol,
-        initialSupplyWei
-      );
-
+      const initialSupplyWei = ethers.utils.parseUnits(form.initialSupply, decimals);
+  
+      const tx = await tokenFactoryContract.createToken(form.name, form.symbol, initialSupplyWei);
+  
       const receipt = await tx.wait();
-      const tokenCreatedEvent = receipt.events?.find(
-        (event) => event.event === "TokenCreated"
-      );
-
+      const tokenCreatedEvent = receipt.events?.find((event) => event.event === "TokenCreated");
+  
       if (tokenCreatedEvent) {
         const newTokenAddress = tokenCreatedEvent.args.tokenAddress;
+        const blockNumber = receipt.blockNumber;
+  
+        // Fetch block details for timestamp
+        const block = await provider.getBlock(blockNumber);
+        const timestamp = new Date(block.timestamp * 1000).toLocaleString();
+  
         setSuccessMessage(
-          `Token created successfully! Address: ${newTokenAddress}`
+          `✅ Token created successfully!
+          \n🔹 Address: ${newTokenAddress}
+          \n🔹 Name: ${form.name}
+          \n🔹 Symbol: ${form.symbol}
+          \n🔹 Tx Hash: ${tx.hash}
+          \n🔹 Block Number: ${blockNumber}
+          \n🔹 Timestamp: ${timestamp}`
         );
       } else {
         setError("Token created, but address not found in event logs.");
       }
-
+  
       setForm({ name: "", symbol: "", initialSupply: "" });
     } catch (err) {
       console.error("Error creating token:", err);
-      setError(
-        `Failed to create token: ${
-          err.message || "Check inputs and try again."
-        }`
-      );
+      setError(`Failed to create token: ${err.message || "Check inputs and try again."}`);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className='token-form-container'>
@@ -107,7 +101,7 @@ const TokenForm = ({ contractAddress, provider }) => {
               onChange={handleChange}
               required
               className='form-input'
-              placeholder='e.g., MyToken'
+              placeholder='Stock Name'
               disabled={loading || !provider}
             />
           </div>
@@ -127,7 +121,7 @@ const TokenForm = ({ contractAddress, provider }) => {
               onChange={handleChange}
               required
               className='form-input'
-              placeholder='e.g., MTK'
+              placeholder='e.g. MTK'
               disabled={loading || !provider}
             />
           </div>
@@ -147,7 +141,7 @@ const TokenForm = ({ contractAddress, provider }) => {
               onChange={handleChange}
               required
               className='form-input'
-              placeholder='e.g., 1000000'
+              placeholder='e.g. 1000000'
               disabled={loading || !provider}
             />
           </div>

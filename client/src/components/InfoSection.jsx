@@ -24,7 +24,7 @@ const InfoSection = () => {
   
   return (
     <div className="page-container">
-      <h1 className="page-title"> SECURUTIES EXCHANGE PLATFORM</h1>
+      <h1 className="page-title"> SECURITIES EXCHANGE PLATFORM</h1>
       
       <div className="flashcards-container">
         {/* Card 1 */}

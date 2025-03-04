@@ -31,10 +31,10 @@ const Home = () => {
       <div className='home-container'>
         <div className='home-content'>
           <div className='home-text'>
-            <h1 className='home-title'>Welcome to the Trading App</h1>
+            <h1 className='home-title'>Welcome to the dApp</h1>
             <p className='home-description'>
               Connect your wallet to start trading securely and efficiently on
-              our cutting-edge Securities Exchange Platform.
+              our platform.
             </p>
             <button
               onClick={account ? disconnectWallet : connectWallet}
