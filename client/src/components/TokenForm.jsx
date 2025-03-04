@@ -1,9 +1,18 @@
+// TokenForm.jsx
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import TokenFactoryJSON from "../assets/ABI.json";
+import {
+  FaPlusCircle,
+  FaSpinner,
+  FaCheckCircle,
+  FaExclamationCircle,
+} from "react-icons/fa";
+import "../App.css";
 
 const TokenFactoryABI = TokenFactoryJSON.abi;
-const TokenForm = ({ contractAddress }) => {
+
+const TokenForm = ({ contractAddress, provider }) => {
   const [form, setForm] = useState({
     name: "",
     symbol: "",
@@ -13,7 +22,6 @@ const TokenForm = ({ contractAddress }) => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -22,217 +30,162 @@ const TokenForm = ({ contractAddress }) => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage("");
-  
-    if (!window.ethereum) {
-      setError("MetaMask is not installed. Please install it to use this feature.");
+
+    if (!provider) {
+      setError(
+        "MetaMask is required to create a token. Please connect your wallet."
+      );
       return;
     }
-  
+
     try {
       setLoading(true);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const tokenFactoryContract = new ethers.Contract(contractAddress, TokenFactoryABI, signer);
-  
-      // Call the `createToken` function and retrieve the transaction response
-      const decimals = 18; // Default ERC20 decimals
+      const tokenFactoryContract = new ethers.Contract(
+        contractAddress,
+        TokenFactoryABI,
+        signer
+      );
+
+      const decimals = 18;
+      const initialSupplyWei = ethers.utils.parseUnits(
+        form.initialSupply,
+        decimals
+      );
+
       const tx = await tokenFactoryContract.createToken(
         form.name,
         form.symbol,
-        ethers.utils.parseUnits(form.initialSupply, decimals) 
+        initialSupplyWei
       );
-  
-      // Wait for the transaction to be mined
+
       const receipt = await tx.wait();
-  
-      // Extract the token contract address from the event logs
-      const tokenCreatedEvent = receipt.events?.find((event) => event.event === "TokenCreated");
-  
+      const tokenCreatedEvent = receipt.events?.find(
+        (event) => event.event === "TokenCreated"
+      );
+
       if (tokenCreatedEvent) {
-        const newTokenAddress = tokenCreatedEvent.args.tokenAddress; // Access token address from event
-        setSuccessMessage(`Token successfully created! Contract Address: ${newTokenAddress}`);
+        const newTokenAddress = tokenCreatedEvent.args.tokenAddress;
+        setSuccessMessage(
+          `Token created successfully! Address: ${newTokenAddress}`
+        );
       } else {
-        setError("Token creation successful, but no token address found in event logs.");
+        setError("Token created, but address not found in event logs.");
       }
-  
-      setForm({ name: "", symbol: "", initialSupply: "" }); 
+
+      setForm({ name: "", symbol: "", initialSupply: "" });
     } catch (err) {
       console.error("Error creating token:", err);
-      setError("Failed to create token. Please check the inputs and try again.");
+      setError(
+        `Failed to create token: ${
+          err.message || "Check inputs and try again."
+        }`
+      );
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
+    <div className='token-form-container'>
+      <form className='token-form-grid' onSubmit={handleSubmit}>
+        {/* Column 1: Token Name */}
+        <div className='token-form-section'>
+          <h2 className='section-title'>
+            <FaPlusCircle className='section-icon' /> Token Name
+          </h2>
+          <div className='form-group'>
+            <input
+              type='text'
+              id='name'
+              name='name'
+              value={form.name}
+              onChange={handleChange}
+              required
+              className='form-input'
+              placeholder='e.g., MyToken'
+              disabled={loading || !provider}
+            />
+          </div>
+        </div>
 
-    
-<div
-  className="token-form"
-  style={{
-    backgroundColor: "#1e1e1e",
-    padding: "20px",
-    borderRadius: "8px",
-    width: "400px",
-    margin: "0 auto",
-    color: "#fff",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
-  }}
->
-  <h2 style={{ marginBottom: "20px", textAlign: "center" }}>Create a New Token</h2>
-  <form onSubmit={handleSubmit}>
-    <div
-      className="form-group"
-      style={{ marginBottom: "15px" }}
-    >
-      <label
-        htmlFor="name"
-        style={{
-          display: "block",
-          marginBottom: "5px",
-          fontSize: "14px",
-          color: "#bbb",
-        }}
-      >
-        Token Name
-      </label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        required
-        style={{
-          width: "100%",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "1px solid #333",
-          backgroundColor: "#2c2c2c",
-          color: "#fff",
-        }}
-      />
+        {/* Column 2: Token Symbol */}
+        <div className='token-form-section'>
+          <h2 className='section-title'>
+            <FaPlusCircle className='section-icon' /> Token Symbol
+          </h2>
+          <div className='form-group'>
+            <input
+              type='text'
+              id='symbol'
+              name='symbol'
+              value={form.symbol}
+              onChange={handleChange}
+              required
+              className='form-input'
+              placeholder='e.g., MTK'
+              disabled={loading || !provider}
+            />
+          </div>
+        </div>
+
+        {/* Column 3: Initial Supply and Submit */}
+        <div className='token-form-section'>
+          <h2 className='section-title'>
+            <FaPlusCircle className='section-icon' /> Initial Supply
+          </h2>
+          <div className='form-group'>
+            <input
+              type='number'
+              id='initialSupply'
+              name='initialSupply'
+              value={form.initialSupply}
+              onChange={handleChange}
+              required
+              className='form-input'
+              placeholder='e.g., 1000000'
+              disabled={loading || !provider}
+            />
+          </div>
+          <button
+            type='submit'
+            className='submit-btn'
+            disabled={loading || !provider}
+          >
+            {loading ? (
+              <>
+                <FaSpinner className='spin-icon' /> Creating...
+              </>
+            ) : (
+              <>
+                <FaPlusCircle className='btn-icon' /> Tokenize
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Messages (spans all columns) */}
+        {(successMessage || error) && (
+          <div className='message-container'>
+            {successMessage && (
+              <div className='message success-message'>
+                <FaCheckCircle className='message-icon' /> {successMessage}
+              </div>
+            )}
+            {error && (
+              <div className='message error-message'>
+                <FaExclamationCircle className='message-icon' /> {error}
+              </div>
+            )}
+          </div>
+        )}
+      </form>
     </div>
-
-    <div
-      className="form-group"
-      style={{ marginBottom: "15px" }}
-    >
-      <label
-        htmlFor="symbol"
-        style={{
-          display: "block",
-          marginBottom: "5px",
-          fontSize: "14px",
-          color: "#bbb",
-        }}
-      >
-        Token Symbol
-      </label>
-      <input
-        type="text"
-        id="symbol"
-        name="symbol"
-        value={form.symbol}
-        onChange={handleChange}
-        required
-        style={{
-          width: "100%",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "1px solid #333",
-          backgroundColor: "#2c2c2c",
-          color: "#fff",
-        }}
-      />
-    </div>
-
-    <div
-      className="form-group"
-      style={{ marginBottom: "15px" }}
-    >
-      <label
-        htmlFor="initialSupply"
-        style={{
-          display: "block",
-          marginBottom: "5px",
-          fontSize: "14px",
-          color: "#bbb",
-        }}
-      >
-        Initial Supply (in tokens)
-      </label>
-      <input
-        type="number"
-        id="initialSupply"
-        name="initialSupply"
-        value={form.initialSupply}
-        onChange={handleChange}
-        required
-        style={{
-          width: "100%",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "1px solid #333",
-          backgroundColor: "#2c2c2c",
-          color: "#fff",
-        }}
-      />
-    </div>
-
-    <button
-      type="submit"
-      className="button"
-      disabled={loading}
-      style={{
-        width: "100%",
-        padding: "10px",
-        borderRadius: "5px",
-        border: "none",
-        backgroundColor: loading ? "#555" : "#28a745",
-        color: "#fff",
-        cursor: loading ? "not-allowed" : "pointer",
-        fontSize: "16px",
-      }}
-    >
-      {loading ? "Creating..." : "Create Token"}
-    </button>
-  </form>
-
-  {successMessage && (
-    <p
-      className="success-message"
-      style={{
-        marginTop: "15px",
-        fontSize: "14px",
-        color: "#28a745",
-        textAlign: "center",
-      }}
-    >
-      {successMessage}
-    </p>
-  )}
-  {error && (
-    <p
-      className="error-message"
-      style={{
-        marginTop: "15px",
-        fontSize: "14px",
-        color: "#ff4d4d",
-        textAlign: "center",
-      }}
-    >
-      {error}
-    </p>
-  )}
-</div>
-  )
+  );
 };
 
 export default TokenForm;

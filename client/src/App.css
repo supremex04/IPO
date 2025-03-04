@@ -1,217 +1,1183 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* You can add custom styles below */
-.App {
-    text-align: center;
-  }
-  
-  .App-logo {
-    height: 40vmin;
-    pointer-events: none;
-  }
-  
-  @media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-      animation: App-logo-spin infinite 20s linear;
-    }
-  }
-  
-  .App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-  }
-  
-  .App-link {
-    color: #61dafb;
-  }
-  
-  @keyframes App-logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  nav {
-    padding: 10px 20px;
-    background-color: #1e1e1e;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  h2 {
-    margin: 0;
-  }
-  
-  /* Styles for the Connect and Disconnect buttons */
-  .connect-button {
-    padding: 12px 25px;
-    background-color: #4caf50; /* Green for connect */
-    color: #fff;
-    border: none;
-    border-radius: 30px; /* Rounded edges */
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .connect-button:hover {
-    background-color: #388e3c;
-    transform: scale(1.05); /* Slight zoom effect */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  .disconnect-button {
-    padding: 12px 25px;
-    background-color: #f44336; /* Red for disconnect */
-    color: #fff;
-    border: none;
-    border-radius: 30px; /* Rounded edges */
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .disconnect-button:hover {
-    background-color: #d32f2f;
-    transform: scale(1.05); /* Slight zoom effect */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Add active state for button press effect */
-  .connect-button:active,
-  .disconnect-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  
-  main {
-    padding: 20px;
-    text-align: center;
-  }
-/* Navbar Styles */
+*{
+  margin: 0%;
+  box-sizing: border-box;
+  padding: 0%;
+}
+
+body, html{
+  background: linear-gradient(to right, #3a1c71, black, #0f9b0f);
+}
+
+::-webkit-scrollbar {
+  width: 2px; /* Slim width */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e; /* Dark background */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff7b00, #ff9900); /* Sleek gradient */
+  border-radius: 30px;
+  transition: 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #1b1710, #171108);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4e4e4e #1e1e1e;
+}
+/* Navbar.css */
 .navbar {
+  background-color: #1a1a1a;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  width: 100%;
+ padding: 1rem;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background-color: #1e1e1e;
-  border-bottom: 2px solid #333;
+  justify-content: space-between;
+  height: 64px; /* Increased height for better appearance */
+  box-shadow: #333 0px 2px 0px;
 }
 
-/* Left side navigation */
-.nav-left {
-  display: flex;
-  gap: 10px;
+.navbar-logo h1 {
+  font-size: 1.5rem; /* Slightly larger for better visibility */
+  font-weight: bold;
+  margin: 0;
 }
 
-/* Home & Token Form Buttons */
-.nav-button {
+.navbar-logo-link {
+  color: white;
   text-decoration: none;
-  color: #fff;
-  background: #333;
-  padding: 8px 15px;
-  border-radius: 5px;
-  transition: 0.3s;
+  transition: color 0.2s ease;
 }
 
-.nav-button:hover {
-  background: #555;
+.navbar-logo-link.navbar-link-active h1 {
+  color: #2563eb; /* Active state for logo */
 }
 
-/* Title in the center */
-.app-title {
-  font-size: 22px;
-  color: #fff;
-  text-align: center;
-  flex-grow: 1;
-}
-
-/* Right side WalletConnect */
-.nav-right {
+.navbar-menu {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem; /* Increased gap for better spacing */
 }
 
-/* Main Content */
-.app-container {
-  background-color: #121212;
-  min-height: 100vh;
-  color: #fff;
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-weight: 500;
 }
 
-.content {
-  padding: 20px;
-  text-align: center;
-}
-.liquidity-container {
-  text-align: center;
-  padding: 20px;
+.navbar-link:hover {
+  background-color: #333;
 }
 
-input {
-  padding: 10px;
-  margin: 5px;
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.navbar-link-active {
+  background-color: #2563eb; /* Active state style */
+  color: white;
 }
 
-button {
-  padding: 10px 20px;
-  background: #4caf50;
+.connect-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and text */
+  background-color: #2563eb;
   color: white;
   border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-button:hover {
-  background: #45a049;
+.connect-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
 }
 
-.input-field {
-  width: 30%;
-  padding: 10px;
-  border-radius: 5px;
+.connect-button:active {
+  transform: translateY(0);
+}
+
+.wallet-icon {
+  font-size: 1.2rem;
+}
+
+.navbar-mobile-toggle {
+  display: none;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.navbar-mobile-menu {
+  background-color: #1a1a1a;
+  padding: 1rem; /* Increased padding for better spacing */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Consistent gap */
+}
+
+/* Mobile Menu Links */
+.navbar-mobile-link {
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  display: block;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+}
+
+.navbar-mobile-link:hover {
+  background-color: #333;
+}
+
+.navbar-mobile-link-active {
+  background-color: #2563eb; /* Active state for mobile */
+  color: white;
+}
+
+.mobile-connect {
+  width: 100%;
+  text-align: center; /* Centered text for mobile */
+  padding: 0.75rem 1rem;
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-button-desktop {
+    display: none;
+  }
+
+  .navbar-mobile-toggle {
+    display: block;
+  }
+
+  .navbar-container {
+    height: 56px; /* Slightly smaller for mobile */
+    padding: 0 1.5rem;
+  }
+
+  .navbar-logo h1 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Smaller screens */
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+
+  .navbar-mobile-menu {
+    padding: 0.75rem;
+  }
+
+  .navbar-mobile-link {
+    font-size: 0.9rem;
+  }
+
+  .mobile-connect {
+    font-size: 0.9rem;
+  }
+}
+
+/* Desktop Styles */
+@media (min-width: 769px) {
+  .navbar-mobile-menu {
+    display: none;
+  }
+}
+
+
+/* Home page */
+/* Global Styles */
+.home-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+  overflow: hidden;
+}
+
+
+
+.home-content {
+  margin-top: 10rem;
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  text-align: center;
+}
+
+/* Title & Description */
+.home-title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.home-description {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: #ddd;
+}
+
+/* Wallet Button */
+.connect-wallet-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.connect-wallet-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px rgba(255, 138, 0, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 2.2rem;
+  }
+
+  .home-description {
+    font-size: 1rem;
+  }
+
+  .connect-wallet-btn {
+    font-size: 1rem;
+  }
+}
+
+
+.token-selection-container {
+  margin-top: 1.5rem;
+}
+
+.token-selection-container h3 {
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.token-selection-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.token-select-btn {
+  flex: 1;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.token-select-btn:hover {
+  background-color: #333333;
+}
+
+.token-select-btn.active {
+  background-color: #1d4ed8;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.4);
+}
+
+/* For disabled state */
+.token-select-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+
+/* not found  */
+
+/* NotFound.css */
+.notfound-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+}
+
+.notfound-content {
+  max-width: 600px;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.notfound-title {
+  font-size: clamp(4rem, 10vw, 6rem);
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #2563eb;
+}
+
+.notfound-subtitle {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.notfound-description {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.notfound-button {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notfound-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.notfound-button:active {
+  transform: translateY(0);
+}
+
+/* Prevent overlap with navbar on mobile */
+@media (max-width: 768px) {
+  .notfound-container {
+    padding-top: 84px;
+  }
+}
+
+
+
+/* TokenForm.css */
+.token-form-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.token-form-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.token-form-section {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 12px;
+  
+  color: #ffffff;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+}
+
+.section-icon {
+  font-size: 1.75rem;
+  color: #2563eb;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
   border: 1px solid #333;
   background-color: #2c2c2c;
   color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  
+}
+
+.form-input::placeholder {
+  color: #666;
+}
+
+.form-input:disabled {
+  background-color: #333;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.submit-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-icon,
+.spin-icon {
+  font-size: 1.2rem;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+.message-container {
+  grid-column: 1 / -1; /* Spans all columns */
+  margin-top: 1rem;
+}
+
+.message {
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.success-message {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  color: #ff4d4d;
+  gap: 4px;
+}
+
+.message-icon {
+  font-size: 1.2rem;
+}
+
+/* Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .token-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .message-container {
+    grid-column: 1 / 3; /* Adjust for 2 columns */
+  }
+}
+
+@media (max-width: 768px) {
+  .token-form-container {
+    padding: 1.5rem;
+    padding-top: 84px; /* Account for fixed navbar */
+  }
+
+  .token-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .token-form-section {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .section-icon {
+    font-size: 1.5rem;
+  }
+
+  .message-container {
+    grid-column: 1 / 2; /* Reset to single column */
+  }
+}
+
+@media (max-width: 480px) {
+  .token-form-container {
+    padding: 1rem;
+  }
+
+  .token-form-section {
+    padding: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .section-icon {
+    font-size: 1.25rem;
+  }
+
+  .form-input {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .submit-btn {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .message {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+}
+
+
+
+
+
+/* LiquidityPool.css */
+.liquidity-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.liquidity-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.liquidity-section {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 12px;
+  
+  color: #ffffff;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+}
+
+.section-icon {
+  font-size: 1.75rem;
+  color: #2563eb;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2c2c2c;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  
+}
+
+.input-field::placeholder {
+  color: #666;
 }
 
 .select-field {
-  width: 30%;
-  padding: 12px; /* Increased padding for more height */
-  border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #3a3a3a; /* Slightly lighter than input field */
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2c2c2c;
   color: #fff;
-  font-size: 16px; /* Slightly bigger text */
-  appearance: none; /* Removes default styles */
-  cursor: pointer;
-}
-
-.select-field option {
-  background-color: #2c2c2c; /* Matches input field */
-  color: #fff;
-  padding: 10px; /* Increased padding inside dropdown options */
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease;
 }
 
 .select-field:focus {
   outline: none;
-  border-color: #666; /* Subtle highlight on focus */
+  border-color: #2563eb;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.action-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.spin-icon {
+  font-size: 1.2rem;
+  animation: spin 1s linear infinite;
+}
+
+.pool-details {
+  margin-top: 1.5rem;
+}
+
+.pool-details h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: #bbb;
+}
+
+.pool-details p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  word-wrap: break-word;
+}
+
+.pool-address {
+  font-size: 0.85rem;
+  color: #2563eb;
+}
+
+/* Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .liquidity-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .liquidity-container {
+    padding: 1.5rem;
+    padding-top: 84px; /* Account for navbar */
+  }
+
+  .liquidity-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .liquidity-section {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .section-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .liquidity-container {
+    padding: 1rem;
+  }
+
+  .liquidity-section {
+    padding: 1rem;
+  }
+
+  .input-field,
+  .select-field,
+  .action-btn {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .section-icon {
+    font-size: 1.25rem;
+  }
+
+  .pool-details h3 {
+    font-size: 1.1rem;
+  }
+
+  .pool-details p {
+    font-size: 0.85rem;
+  }
+}
+
+
+
+
+
+/* Swap.css */
+.swap-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.swap-grid {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.swap-section {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 12px;
+  
+  color: #ffffff;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+}
+
+.section-icon {
+  font-size: 1.75rem;
+  color: #2563eb;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2c2c2c;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  
+}
+
+.input-field::placeholder {
+  color: #666;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.action-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.action-btn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.spin-icon {
+  font-size: 1.2rem;
+  animation: spin 1s linear infinite;
+}
+
+.pool-info,
+.swap-result {
+  margin-top: 1.5rem;
+}
+
+.pool-info p,
+.swap-result p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #bbb;
+}
+
+/* Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .swap-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .swap-container {
+    padding: 1.5rem;
+    padding-top: 84px; /* Account for fixed navbar */
+  }
+
+  .swap-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .swap-section {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .section-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .swap-container {
+    padding: 1rem;
+  }
+
+  .swap-section {
+    padding: 1rem;
+  }
+
+  .input-field,
+  .action-btn {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .section-icon {
+    font-size: 1.25rem;
+  }
+
+  .pool-info p,
+  .swap-result p {
+    font-size: 0.85rem;
+  }
+}
+
+.stats-section {
+  color: white;
+  padding: 80px 20px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Gradient Overlay */
+.stats-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #3a1c71, black, #0f9b0f);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.stats-container {
+  position: relative;
+  max-width: 1200px;
+  margin: auto;
+  z-index: 1;
+}
+
+/* Title & Subtitle */
+.stats-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.stats-subtitle {
+  font-size: 0.9rem;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+/* Grid Layout */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Card Styles */
+.stat-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Text Styling */
+.stat-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #999;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-title {
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+.info-section {
+  padding: 40px 20px;
+  font-family: 'Arial', sans-serif;
+  color: #968888;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #a0caf4;
+}
+
+.info-block {
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.info-block h3 {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+  color: #9da0a2;
+}
+
+.info-block p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #bac3c4;
+}
+
+.info-block ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.info-block ul li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .info-block {
+    padding: 15px;
+  }
+
+  .info-block h3 {
+    font-size: 1.4rem;
+  }
+
+  .info-block p, .info-block ul li {
+    font-size: 0.95rem;
+  }
 }
