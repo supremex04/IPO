@@ -18,9 +18,9 @@ import NotFound from "./components/NotFound.jsx";
 import "./App.css";
 
 const TGE = process.env.REACT_APP_TGE_CONTRACT;
-const ADMIN_ADDRESS = process.env.REACT_APP_ADMIN_ADDRESS?.toLowerCase(); // Admin address from .env
+const ADMIN_ADDRESS = process.env.REACT_APP_ADMIN_ADDRESS?.toLowerCase();
 
-const AppContent = ({ provider, setLoadingProgress, walletError, userAddress }) => {
+const AppContent = ({ provider, setLoadingProgress, walletError, account, connectWallet, disconnectWallet }) => {
   const location = useLocation();
   const navigationType = useNavigationType();
 
@@ -35,7 +35,12 @@ const AppContent = ({ provider, setLoadingProgress, walletError, userAddress }) 
 
   return (
     <div className='app-container'>
-      <Navbar provider={provider} userAddress={userAddress} /> 
+      <Navbar 
+        provider={provider} 
+        account={account} 
+        connectWallet={connectWallet} 
+        disconnectWallet={disconnectWallet} 
+      />
       <div className='content'>
         {walletError && (
           <div className='wallet-error'>
@@ -45,21 +50,15 @@ const AppContent = ({ provider, setLoadingProgress, walletError, userAddress }) 
             </button>
             <p className='install-instruction'>
               Don’t have MetaMask?{" "}
-              <a
-                href='https://metamask.io/download.html'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='install-link'
-              >
+              <a href='https://metamask.io/download.html' target='_blank' rel='noopener noreferrer' className='install-link'>
                 Install it here
-              </a>
-              .
+              </a>.
             </p>
           </div>
         )}
         <Routes>
-          <Route path='/' element={<Home />} />
-          {userAddress === ADMIN_ADDRESS && (
+          <Route path='/' element={<Home account={account} connectWallet={connectWallet} disconnectWallet={disconnectWallet} />} />
+          {account === ADMIN_ADDRESS && (
             <Route path='/tokenform' element={<TokenForm contractAddress={TGE} provider={provider} />} />
           )}
           <Route path='/liquiditypool' element={<LiquidityPool provider={provider} />} />
@@ -73,42 +72,62 @@ const AppContent = ({ provider, setLoadingProgress, walletError, userAddress }) 
 
 const App = () => {
   const [provider, setProvider] = useState(null);
-  const [userAddress, setUserAddress] = useState(null);
+  const [account, setAccount] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [walletError, setWalletError] = useState(null);
+
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      setWalletError("MetaMask is not installed. Please install it.");
+      return;
+    }
+    try {
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      setAccount(accounts[0].toLowerCase());
+      setWalletError(null);
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      setWalletError("Failed to connect. Try again.");
+    }
+  };
+
+  const disconnectWallet = () => {
+    setAccount(null);
+  };
 
   useEffect(() => {
     const initializeProvider = async () => {
       if (!window.ethereum) {
-        setWalletError("No Ethereum provider found. Please install MetaMask to use this application.");
+        setWalletError("No Ethereum provider found.");
         return;
       }
       try {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
         const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         setProvider(web3Provider);
 
-        const signer = web3Provider.getSigner();
-        const address = await signer.getAddress();
-        setUserAddress(address.toLowerCase()); // Normalize address for comparison
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts.length > 0) {
+          setAccount(accounts[0].toLowerCase());
+        }
         setWalletError(null);
       } catch (err) {
-        console.error("Error connecting to MetaMask:", err);
-        setWalletError("Failed to connect to MetaMask. Please ensure it’s installed and try again.");
+        console.error("Error initializing provider:", err);
       }
     };
 
     initializeProvider();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", initializeProvider);
+      window.ethereum.on("accountsChanged", (accounts) => {
+        setAccount(accounts.length > 0 ? accounts[0].toLowerCase() : null);
+      });
       window.ethereum.on("chainChanged", () => window.location.reload());
     }
 
     return () => {
       if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", initializeProvider);
-        window.ethereum.removeListener("chainChanged", () => window.location.reload());
+        window.ethereum.removeListener("accountsChanged", () => {});
+        window.ethereum.removeListener("chainChanged", () => {});
       }
     };
   }, []);
@@ -116,11 +135,13 @@ const App = () => {
   return (
     <Router>
       <LoadingBar color='#2563eb' progress={loadingProgress} height={3} onLoaderFinished={() => setLoadingProgress(0)} />
-      <AppContent
-        provider={provider}
-        setLoadingProgress={setLoadingProgress}
-        walletError={walletError}
-        userAddress={userAddress}
+      <AppContent 
+        provider={provider} 
+        setLoadingProgress={setLoadingProgress} 
+        walletError={walletError} 
+        account={account} 
+        connectWallet={connectWallet} 
+        disconnectWallet={disconnectWallet} 
       />
     </Router>
   );
