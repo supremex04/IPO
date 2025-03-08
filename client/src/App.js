@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -19,8 +18,9 @@ import NotFound from "./components/NotFound.jsx";
 import "./App.css";
 
 const TGE = process.env.REACT_APP_TGE_CONTRACT;
+const ADMIN_ADDRESS = process.env.REACT_APP_ADMIN_ADDRESS?.toLowerCase(); // Admin address from .env
 
-const AppContent = ({ provider, setLoadingProgress, walletError }) => {
+const AppContent = ({ provider, setLoadingProgress, walletError, userAddress }) => {
   const location = useLocation();
   const navigationType = useNavigationType();
 
@@ -35,16 +35,12 @@ const AppContent = ({ provider, setLoadingProgress, walletError }) => {
 
   return (
     <div className='app-container'>
-      <Navbar provider={provider} />{" "}
-      {/* Pass provider to Navbar for wallet connection */}
+      <Navbar provider={provider} userAddress={userAddress} /> 
       <div className='content'>
         {walletError && (
           <div className='wallet-error'>
             <p>{walletError}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className='retry-btn'
-            >
+            <button onClick={() => window.location.reload()} className='retry-btn'>
               Retry
             </button>
             <p className='install-instruction'>
@@ -63,14 +59,10 @@ const AppContent = ({ provider, setLoadingProgress, walletError }) => {
         )}
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route
-            path='/tokenform'
-            element={<TokenForm contractAddress={TGE} provider={provider} />}
-          />
-          <Route
-            path='/liquiditypool'
-            element={<LiquidityPool provider={provider} />}
-          />
+          {userAddress === ADMIN_ADDRESS && (
+            <Route path='/tokenform' element={<TokenForm contractAddress={TGE} provider={provider} />} />
+          )}
+          <Route path='/liquiditypool' element={<LiquidityPool provider={provider} />} />
           <Route path='/swap' element={<Swap provider={provider} />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
@@ -81,58 +73,54 @@ const AppContent = ({ provider, setLoadingProgress, walletError }) => {
 
 const App = () => {
   const [provider, setProvider] = useState(null);
+  const [userAddress, setUserAddress] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [walletError, setWalletError] = useState(null);
 
   useEffect(() => {
     const initializeProvider = async () => {
       if (!window.ethereum) {
-        setWalletError(
-          "No Ethereum provider found. Please install MetaMask to use this application."
-        );
+        setWalletError("No Ethereum provider found. Please install MetaMask to use this application.");
         return;
       }
       try {
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         setProvider(web3Provider);
+
+        const signer = web3Provider.getSigner();
+        const address = await signer.getAddress();
+        setUserAddress(address.toLowerCase()); // Normalize address for comparison
         setWalletError(null);
       } catch (err) {
         console.error("Error connecting to MetaMask:", err);
-        setWalletError(
-          "Failed to connect to MetaMask. Please ensure it’s installed and try again."
-        );
+        setWalletError("Failed to connect to MetaMask. Please ensure it’s installed and try again.");
       }
     };
+
     initializeProvider();
 
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => initializeProvider());
+      window.ethereum.on("accountsChanged", initializeProvider);
       window.ethereum.on("chainChanged", () => window.location.reload());
     }
 
     return () => {
       if (window.ethereum) {
         window.ethereum.removeListener("accountsChanged", initializeProvider);
-        window.ethereum.removeListener("chainChanged", () =>
-          window.location.reload()
-        );
+        window.ethereum.removeListener("chainChanged", () => window.location.reload());
       }
     };
   }, []);
 
   return (
     <Router>
-      <LoadingBar
-        color='#2563eb'
-        progress={loadingProgress}
-        height={3}
-        onLoaderFinished={() => setLoadingProgress(0)}
-      />
+      <LoadingBar color='#2563eb' progress={loadingProgress} height={3} onLoaderFinished={() => setLoadingProgress(0)} />
       <AppContent
         provider={provider}
         setLoadingProgress={setLoadingProgress}
         walletError={walletError}
+        userAddress={userAddress}
       />
     </Router>
   );

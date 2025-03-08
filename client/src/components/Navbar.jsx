@@ -1,12 +1,20 @@
-// Navbar.jsx
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom"; // Changed from Link to NavLink
+import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
-import "../App.css"; // Using the provided Navbar.css
+import "../App.css";
+
+const ADMIN_ADDRESS = process.env.REACT_APP_ADMIN_ADDRESS?.toLowerCase(); // Get Admin Address from .env
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [account, setAccount] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false); // Track if the user is an admin
+
+  useEffect(() => {
+    if (account && ADMIN_ADDRESS) {
+      setIsAdmin(account.toLowerCase() === ADMIN_ADDRESS);
+    }
+  }, [account]);
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -19,14 +27,13 @@ const Navbar = () => {
         console.error("Error connecting wallet:", error);
       }
     } else {
-      alert(
-        "MetaMask is not installed. Please install it to use this feature."
-      );
+      alert("MetaMask is not installed. Please install it to use this feature.");
     }
   };
 
   const disconnectWallet = () => {
     setAccount(null);
+    setIsAdmin(false);
   };
 
   const handleWalletButton = () => {
@@ -39,10 +46,13 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Tokenization Form", path: "/tokenform" },
     { name: "Liquidity Pool", path: "/liquiditypool" },
     { name: "Swap", path: "/swap" },
   ];
+
+  if (isAdmin) {
+    navLinks.splice(1, 0, { name: "Tokenization Form", path: "/tokenform" }); // Insert at index 1
+  }
 
   return (
     <nav className='navbar'>
@@ -86,11 +96,7 @@ const Navbar = () => {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className='mobile-menu-button'
           >
-            {isMobileMenuOpen ? (
-              <FaTimes className='menu-icon' />
-            ) : (
-              <FaBars className='menu-icon' />
-            )}
+            {isMobileMenuOpen ? <FaTimes className='menu-icon' /> : <FaBars className='menu-icon' />}
           </button>
         </div>
       </div>
@@ -103,9 +109,7 @@ const Navbar = () => {
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `navbar-mobile-link ${
-                  isActive ? "navbar-mobile-link-active" : ""
-                }`
+                `navbar-mobile-link ${isActive ? "navbar-mobile-link-active" : ""}`
               }
               end
               onClick={() => setIsMobileMenuOpen(false)}

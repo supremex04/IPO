@@ -24,7 +24,7 @@ const InfoSection = () => {
   
   return (
     <div className="page-container">
-      <h1 className="page-title"> SECURITIES EXCHANGE PLATFORM</h1>
+      <h1 className="page-title"> BLOCKCHAIN BASED SECURITIES EXCHANGE PLATFORM</h1>
       
       <div className="flashcards-container">
         {/* Card 1 */}
@@ -53,14 +53,13 @@ const InfoSection = () => {
         >
           <div className="flashcard-inner">
             <div className="flashcard-front">
-              <h2 className="card-title">ENHANCED SECURITY</h2>
+              <h2 className="card-title">LIQUIDITY INJECTION</h2>
               {/* <p>Click Here</p> */}
             </div>
             <div className="flashcard-back">
-              <h3 className="card-title">ENHANCED SECURITY</h3>
+              <h3 className="card-title">LIQUIDITY INJECTION</h3>
               <p className="card-content">
-              Blockchain's cryptography and decentralization protect against hacking and fraud, eliminating single points of failure.
-              </p>
+              An average user can contribute to providing liquidity and earn a share of the trading fees.              </p>
             </div>
           </div>
         </div>

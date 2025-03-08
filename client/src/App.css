@@ -1181,3 +1181,40 @@ body, html{
     font-size: 0.95rem;
   }
 }
+
+.success-message-box {
+  background-color: #e6f3ff;
+  border: 1px solid #4a90e2;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.success-message-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4a90e2;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.success-message-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.success-message-details span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.success-message-details .detail-icon {
+  color: #4a90e2;
+  margin-right: 8px;
+}

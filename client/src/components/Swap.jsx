@@ -372,20 +372,23 @@ const Swap = ({ provider }) => {
     <div className='token-selection-container'>
       <h3>Select Token to Pay With</h3>
       <div className='token-selection-buttons'>
+      <button 
+          className={`token-select-btn ${selectedTokenDir === "B" ? 'active' : ''}`} 
+          onClick={() => handleTokenSelect("B")}
+          disabled={loading.swap}
+        >
+          BUY {poolTokens.tokenASymbol}
+          {/* Pay with {poolTokens.tokenBSymbol} */}
+        </button>
         <button 
           className={`token-select-btn ${selectedTokenDir === "A" ? 'active' : ''}`} 
           onClick={() => handleTokenSelect("A")}
           disabled={loading.swap}
         >
-          Pay with {poolTokens.tokenASymbol}
+          SELL {poolTokens.tokenASymbol}
+          {/* Pay with {poolTokens.tokenASymbol} */}
         </button>
-        <button 
-          className={`token-select-btn ${selectedTokenDir === "B" ? 'active' : ''}`} 
-          onClick={() => handleTokenSelect("B")}
-          disabled={loading.swap}
-        >
-          Pay with {poolTokens.tokenBSymbol}
-        </button>
+        
       </div>
     </div>
   </>
@@ -404,13 +407,13 @@ const Swap = ({ provider }) => {
             </div>
           ) : !selectedTokenDir ? (
             <div className='no-token-selected'>
-              Please select a token to pay with
+              Please select the option
             </div>
           ) : (
             <>
               <div className='token-swap-card'>
                 <div className='token-swap-header'>
-                  <span>You Pay </span>
+                  <span>Amount </span>
                   <span className='token-name'>
                     {selectedTokenDir === "A" ? poolTokens.tokenASymbol : poolTokens.tokenBSymbol}
                   </span>
